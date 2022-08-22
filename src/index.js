@@ -1,22 +1,20 @@
 import React from 'react';
+import { Provider } from 'react-redux';
 import ReactDOM from 'react-dom/client';
-// import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { createStore } from 'redux';
 import './index.css';
+import rootReducers from './reducers/rootReducers';
 import Router from './routes/Router';
-// import MoviesPage from './pages/MoviesPage';
-// import TestPage from './pages/testPage';
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+let store = createStore(rootReducers);
 root.render(
   <React.StrictMode>
-    <Router />
-    {/* <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<MoviesPage />}></Route>
-        <Route path="/test" element={<TestPage />} />
-      </Routes>
-    </BrowserRouter> */}
+    <Provider store={store}>
+      {console.log(store.getState())}
+      <Router />  
+    </Provider>
     
   </React.StrictMode>
 );
