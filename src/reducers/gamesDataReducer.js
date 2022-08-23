@@ -4,11 +4,10 @@ let gamesData = dataGames()
 const gamesDataReducer = (state = gamesData, action) => {
     switch(action.type) {
         case 'ADD_NEW_GAME':
-            return [...state, {id: 999, title: "baru"}]
+            return [...state, action.payload]
         default :
             return state
     }
 }
-
 
 export default gamesDataReducer;

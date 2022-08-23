@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { addNewGame } from '../actions/actionCreator';
 import { Box, TextField, Button } from '@mui/material';
-import { dataGames } from '../data/testOnly';
 import PageTitle from '../components/PageTitle';
 
-export default function AddGamePage () {
-  const gamesList = dataGames();
+const mapStateToProps = state => ({ gamesData : state.gamesData});
+const matchDispatchToProps = dispatch => bindActionCreators({addGameDispatcher : addNewGame}, dispatch)
+const AddGamePage = ({gamesData, addGameDispatcher})  => {
   let history = useNavigate();
-  let nextGameId = gamesList.length + 1;
-  const [idValue, setIdValue] = useState(nextGameId.toString());
   const [titleValue, setTitleValue] = useState("");
   const [releaseValue, setReleaseValue] = useState('');
   const [developerValue, setDeveloperValue] = useState('');
@@ -25,14 +26,22 @@ export default function AddGamePage () {
     targetedState(event.target.value);
   }
 
+  const getLastGameId = (currentGameList) => {
+    let lastIndexOnGameList = currentGameList.length - 1
+    let searchlastGameId = Number(currentGameList.filter((game, index) => index === lastIndexOnGameList).map(game => game.id))
+    console.log(searchlastGameId)
+    return searchlastGameId + 1
+  }
+
   const handleSubmit = () => {
     if(titleValue === "" || releaseValue === "" || developerValue === "" || publisherValue === "" || modeValue === "" || genreValue === "" || platformValue === "" || imageValue === "" || descriptionValue === "" || storylineValue === "") {
       alert("fill all forms first before proceed !!!");
       return
     }
+    
     let nextGameData = 
       {
-        "id": Number(idValue),
+        "id": getLastGameId(gamesData),
         "title": titleValue,
         "release": Number(releaseValue),
         "developer": developerValue,
@@ -44,7 +53,8 @@ export default function AddGamePage () {
         "description": descriptionValue,
         "storyline": storylineValue
       } 
-    gamesList.push(nextGameData);
+      
+    addGameDispatcher(nextGameData);
     history('/games-table');
   }
 
@@ -52,42 +62,42 @@ export default function AddGamePage () {
     <Box>
       <PageTitle titleText="Add Game" />
       <Box display="flex" margin={2}>
-                <TextField id={idValue} label="Title" value={titleValue} onChange={(event) => handleChange(event, setTitleValue)} fullWidth required />    
+                <TextField id="inputTitle" label="Title" value={titleValue} onChange={(event) => handleChange(event, setTitleValue)} fullWidth required />    
             </Box>
             <Box display="flex" margin={2}>  
-                <TextField id={idValue} label="Release" value={releaseValue} onChange={(event) => handleChange(event, setReleaseValue)} required /> 
+                <TextField id="inputRelease" label="Release" value={releaseValue} onChange={(event) => handleChange(event, setReleaseValue)} required /> 
             </Box>
             <Box display="flex" margin={2}>  
-                <TextField id={idValue} label="Developer" value={developerValue} onChange={(event) => handleChange(event, setDeveloperValue)} fullWidth required /> 
+                <TextField id="inputDeveloper" label="Developer" value={developerValue} onChange={(event) => handleChange(event, setDeveloperValue)} fullWidth required /> 
             </Box>
             <Box display="flex" margin={2}>  
-                <TextField id={idValue} label="Publisher" value={publisherValue} onChange={(event) => handleChange(event, setPublisherValue)} fullWidth required /> 
+                <TextField id="inputPublisher" label="Publisher" value={publisherValue} onChange={(event) => handleChange(event, setPublisherValue)} fullWidth required /> 
             </Box>
             <Box display="flex" margin={2}>  
-                <TextField id={idValue} label="Mode" value={modeValue} onChange={(event) => handleChange(event, setModeValue)} fullWidth required /> 
+                <TextField id="inputMode" label="Mode" value={modeValue} onChange={(event) => handleChange(event, setModeValue)} fullWidth required /> 
             </Box>
             <Box display="flex" margin={2}>  
-                <TextField id={idValue} label="Genre" value={genreValue} onChange={(event) => handleChange(event, setGenreValue)} fullWidth required /> 
+                <TextField id="inputGenre" label="Genre" value={genreValue} onChange={(event) => handleChange(event, setGenreValue)} fullWidth required /> 
             </Box>
             <Box display="flex" margin={2}>  
-                <TextField id={idValue} label="Platform" value={platformValue} onChange={(event) => handleChange(event, setPlatformValue)} fullWidth required /> 
+                <TextField id="inputPlatform" label="Platform" value={platformValue} onChange={(event) => handleChange(event, setPlatformValue)} fullWidth required /> 
             </Box>
             <Box display="flex" margin={2}>  
-                <TextField id={idValue} label="Image" value={imageValue} onChange={(event) => handleChange(event, setImageValue)} fullWidth required /> 
+                <TextField id="inputImage" label="Image" value={imageValue} onChange={(event) => handleChange(event, setImageValue)} fullWidth required /> 
             </Box>
             <Box display="flex" margin={2}>  
-                <TextField id={idValue} label="Description" value={descriptionValue} onChange={(event) => handleChange(event, setDescriptionValue)} fullWidth required /> 
+                <TextField id="inputDescription" label="Description" value={descriptionValue} onChange={(event) => handleChange(event, setDescriptionValue)} fullWidth required /> 
             </Box>
             <Box display="flex" margin={2}>  
-                <TextField id={idValue} label="Storyline" value={storylineValue} onChange={(event) => handleChange(event, setStorylineValue)} fullWidth required /> 
+                <TextField id="inputStoryline" label="Storyline" value={storylineValue} onChange={(event) => handleChange(event, setStorylineValue)} fullWidth required /> 
             </Box>
 
             <Box display="flex" margin={6} justifyContent="center">  
                 <Button 
-                    id={idValue} 
+                    id="addGameButton"
                     variant="contained" 
                     size='large'
-                    onClick={() => handleSubmit(idValue)}>
+                    onClick={() => handleSubmit()}>
                         Submit Changes
                 </Button> 
             </Box>
@@ -95,3 +105,5 @@ export default function AddGamePage () {
     </Box>
   )
 }
+
+export default connect(mapStateToProps, matchDispatchToProps) (AddGamePage)

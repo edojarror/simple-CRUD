@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 import { TableCell, TableHead, TableRow, TableSortLabel, Box, Paper, TableContainer, Table, TableBody, TablePagination, Button, TextField, Grid } from '@mui/material';
-import { dataGames } from '../data/testOnly';
 import PageTitle from '../components/PageTitle';
 
-const rows = dataGames();
+
 const keys = ["title", "release", "genre", "developer", "mode", "platform"];
 
     
@@ -52,6 +52,8 @@ const headCells = [
         label: 'Action'
     }
 ]
+
+const mapStateToProps = state => ({rows : state.gamesData})
 
 function stableSort(array, comparator) {
     const stabilizedThis = array.map((el, index) => [el, index]);
@@ -125,7 +127,7 @@ function EnhancedTableHead (props) {
     )
 }
 
-export default function MoviesTable () {
+const GamesTable = ({rows}) =>  {
     const [order, setOrder] = useState('asc');
     const [orderBy, setOrderBy] = useState('random');
     const [page, setPage] = useState(0);
@@ -272,3 +274,5 @@ export default function MoviesTable () {
         </Box>
     )
 }
+
+export default connect(mapStateToProps) (GamesTable)
