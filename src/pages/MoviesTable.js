@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 import { TableCell, TableHead, TableRow, TableSortLabel, Box, Paper, TableContainer, Table, TableBody, TablePagination, TextField, Button, Grid } from '@mui/material';
-import { dataMovies } from '../data/testDataMovies';
 import PageTitle from '../components/PageTitle';
 
-const rows = dataMovies();
+const mapStateToProps = state => ({rows: state.moviesData})
 const keys = ["title", "release-date", "duration", "director", "writers", "stars", "genre"];
 
     
@@ -134,7 +134,7 @@ function EnhancedTableHead (props) {
     )
 }
 
-export default function MoviesTable () {
+const MoviesTable = ({rows}) => {
     const [order, setOrder] = useState('asc');
     const [orderBy, setOrderBy] = useState('random');
     const [page, setPage] = useState(0);
@@ -195,6 +195,7 @@ export default function MoviesTable () {
 
     return (
         <Box>
+            <h4>{JSON.stringify(rows.map(row => row.title))}</h4>
             <PageTitle titleText="Movies Table" />
             <Box margin={5} display="flex" justifyContent="center">
                 <TextField 
@@ -285,3 +286,6 @@ export default function MoviesTable () {
         </Box>
     )
 }
+
+
+export default connect(mapStateToProps) (MoviesTable)

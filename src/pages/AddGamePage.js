@@ -29,7 +29,6 @@ const AddGamePage = ({gamesData, addGameDispatcher})  => {
   const getLastGameId = (currentGameList) => {
     let lastIndexOnGameList = currentGameList.length - 1
     let searchlastGameId = Number(currentGameList.filter((game, index) => index === lastIndexOnGameList).map(game => game.id))
-    console.log(searchlastGameId)
     return searchlastGameId + 1
   }
 

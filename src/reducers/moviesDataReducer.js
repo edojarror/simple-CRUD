@@ -65,7 +65,7 @@ let movies = [
 const moviesDataReducer = (state = movies, action) => {
     switch(action.type) {
         case "ADD_NEW_MOVIE" :
-            return [...state, {id: 999, title: "asdffzxcvkkasdf"}]
+            return [...state, action.payload]
         default :
             return state
     }
