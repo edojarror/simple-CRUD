@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { dataMovies } from '../data/testDataMovies'; 
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { editMovie } from '../actions/actionCreator';
 import { TextField, Box, Button } from '@mui/material';
 import PageTitle from '../components/PageTitle';
 
-export default function EditMoviePage () {
+const matchDispatchToProps = dispatch => bindActionCreators({editMovieHandler : editMovie}, dispatch)
+const EditMoviePage = ({ editMovieHandler}) => {
     let history = useNavigate();
-    let moviesListData = dataMovies();
 
     const [idValue, setIdValue] = useState("");
     const [titleValue, setTitleValue] = useState("");
@@ -19,8 +21,6 @@ export default function EditMoviePage () {
     const [imageValue, setImageValue] = useState("");
     const [descriptionValue, setDescriptionValue] = useState("");
     const handleSubmit = (currentMovieId) => {
-        let copyOfMoviesList = moviesListData.slice(0, moviesListData.length);
-        let currentMovieIndex = copyOfMoviesList.findIndex(movie => movie.id === Number(currentMovieId));
         let editedMovieValue = 
             {
                 "id": Number(idValue), 
@@ -34,7 +34,7 @@ export default function EditMoviePage () {
                 "image": imageValue,
                 "description": descriptionValue
             }
-            moviesListData.splice(currentMovieIndex, 1, editedMovieValue);
+        editMovieHandler(Number(currentMovieId),editedMovieValue)
         history('/movies-table');
     }
     const handleChange = (event, targetedState) => {
@@ -96,3 +96,5 @@ export default function EditMoviePage () {
         </div>
     )
 }
+
+export default connect(null, matchDispatchToProps) (EditMoviePage)

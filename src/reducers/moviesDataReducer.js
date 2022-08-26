@@ -66,6 +66,24 @@ const moviesDataReducer = (state = movies, action) => {
     switch(action.type) {
         case "ADD_NEW_MOVIE" :
             return [...state, action.payload]
+        case "EDIT_MOVIE" :
+            return state.map(movie => movie.id === action.targetedId 
+                ?   ({
+                        ...movie,
+                        title: action.editedMovieData.title, 
+                        "release-date": action.editedMovieData["release-date"],
+                        duration: action.editedMovieData.duration,
+                        director: action.editedMovieData.director,
+                        writers: action.editedMovieData.writers,
+                        stars: action.editedMovieData.stars,
+                        genre: action.editedMovieData.genre,
+                        image: action.editedMovieData.image,
+                        description: action.editedMovieData.description
+                    })
+                :   movie
+            
+            
+            )
         default :
             return state
     }

@@ -195,7 +195,6 @@ const MoviesTable = ({rows}) => {
 
     return (
         <Box>
-            <h4>{JSON.stringify(rows.map(row => row.title))}</h4>
             <PageTitle titleText="Movies Table" />
             <Box margin={5} display="flex" justifyContent="center">
                 <TextField 
