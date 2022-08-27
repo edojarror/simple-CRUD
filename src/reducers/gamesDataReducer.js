@@ -1,5 +1,3 @@
-import {dataGames} from '../data/testOnly'
-let gamesData = dataGames()
 let games = [
     {
         "id": 1,

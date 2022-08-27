@@ -1,10 +1,14 @@
 import { useParams } from 'react-router-dom';
-import { getGame } from '../data/testOnly';
+import { connect } from 'react-redux';
 import { Box, Grid, Typography, Card, CardMedia } from '@mui/material';
 import DetailedText from '../components/DetailedText';
-export default function DetailedGamePage () {
+
+const mapStateToProps = state => ({gamesData : state.gamesData});
+
+const DetailedGamePage = ({ gamesData }) => {
     let params = useParams();  
-    let dataGame = getGame(params.gameId)
+    const findingDetailedGame = (targetedGameId, gameData) => gameData.find(game => game.id === Number(targetedGameId)) 
+    let dataGame = findingDetailedGame(params.gameId, gamesData)
 
     return (
         <Box padding={1} key={dataGame.id} boxSizing="border-box">
@@ -43,3 +47,5 @@ export default function DetailedGamePage () {
         </Box>
     )
 }
+
+export default connect(mapStateToProps) (DetailedGamePage)
