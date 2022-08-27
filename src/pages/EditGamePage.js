@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { editGame } from '../actions/actionCreator';
 import { TextField, Box, Button } from '@mui/material';
-import { dataGames } from '../data/testOnly';
 import PageTitle from '../components/PageTitle';
 
-export default function EditGamePage () {
+const matchDispatchToProps = dispatch => bindActionCreators({editGameHandler: editGame}, dispatch);
+const EditGamePage = ({ editGameHandler }) => {
     
     let history = useNavigate();
-    let gamesListData = dataGames();
 
     const [idValue, setIdValue] = useState("");
     const [titleValue, setTitleValue] = useState("");
@@ -21,8 +23,6 @@ export default function EditGamePage () {
     const [descriptionValue, setDescriptionValue] = useState('');
     const [storylineValue, setStorylineValue] = useState("");
     const handleSubmit = (currentGameId) => {
-        let copyOfGamesList = gamesListData.slice(0, gamesListData.length);
-        let currentGameIndex = copyOfGamesList.findIndex(game => game.id === Number(currentGameId));
         let editedGameValue = 
             {
                 "id": Number(idValue), 
@@ -37,9 +37,7 @@ export default function EditGamePage () {
                 "description": descriptionValue, 
                 "storyline": storylineValue
             }
-        
-        gamesListData.splice(currentGameIndex, 1, editedGameValue);
-        console.log("result after edited : ",gamesListData);
+        editGameHandler(Number(currentGameId), editedGameValue);
         history('/games-table')
     }
     const handleChange = (event, targetedState) => {
@@ -106,3 +104,6 @@ export default function EditGamePage () {
         </Box>
     )
 }
+
+
+export default connect(null, matchDispatchToProps) (EditGamePage)
