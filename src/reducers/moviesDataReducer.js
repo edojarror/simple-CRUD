@@ -84,6 +84,8 @@ const moviesDataReducer = (state = movies, action) => {
             
             
             )
+        case "DELETE_MOVIE" :
+            return state.filter(movie => movie.id !== action.targetedId)
         default :
             return state
     }

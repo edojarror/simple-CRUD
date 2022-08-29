@@ -1,10 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { deleteMovie } from '../actions/actionCreator';
 import { TableCell, TableHead, TableRow, TableSortLabel, Box, Paper, TableContainer, Table, TableBody, TablePagination, TextField, Button, Grid } from '@mui/material';
 import PageTitle from '../components/PageTitle';
 
 const mapStateToProps = state => ({rows: state.moviesData})
+const matchDispatchToProps = dispatch => bindActionCreators({deleteButtonDispatcher : deleteMovie}, dispatch)
 const keys = ["title", "release-date", "duration", "director", "writers", "stars", "genre"];
 
     
@@ -134,13 +137,11 @@ function EnhancedTableHead (props) {
     )
 }
 
-const MoviesTable = ({rows}) => {
+const MoviesTable = ({ rows, deleteButtonDispatcher }) => {
     const [order, setOrder] = useState('asc');
     const [orderBy, setOrderBy] = useState('random');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
-    const [moviesListData, setMoviesListData] = useState(rows);
-    const [filteredMoviesData, setFilteredMoviesData] = useState(moviesListData);
     const [textAtFilter, setTextAtFilter] = useState("");
 
     const onRequestSort = (event, property) => {
@@ -162,18 +163,7 @@ const MoviesTable = ({rows}) => {
     const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
-    const filteredMoviesList = moviesListData.filter(movie => keys.some(key => movie[key].toLowerCase().includes(textAtFilter.toLocaleLowerCase())))
-
-    const handleDeleteButton = (movieId, event) => {
-        event.preventDefault();
-        let currentMoviesData = moviesListData.slice(0, moviesListData.length);
-        let searching = currentMoviesData.findIndex( movie => movie.id === movieId);
-        currentMoviesData.splice(searching, 1);
-        setMoviesListData(currentMoviesData);
-        setFilteredMoviesData(currentMoviesData);
-        setRowsPerPage(rowsPerPage);
-        rows.splice(searching, 1);
-    }
+    const filteredMoviesData = (currentData, whatToFilter) => currentData.filter(movie => keys.some(key => movie[key].toString().toLocaleLowerCase().includes(whatToFilter.toLocaleLowerCase())))
 
     const handleEditButton = (currentMovie) => {
         localStorage.clear();
@@ -188,10 +178,6 @@ const MoviesTable = ({rows}) => {
         localStorage.setItem("image", currentMovie.image);
         localStorage.setItem("description", currentMovie.description);
     }
-
-    useEffect(() => {
-        setFilteredMoviesData(filteredMoviesList)
-    }, [textAtFilter]);
 
     return (
         <Box>
@@ -214,7 +200,7 @@ const MoviesTable = ({rows}) => {
                     >
                         <EnhancedTableHead order={order} orderBy={orderBy} onRequestSort={onRequestSort} />
                         <TableBody>
-                            {stableSort(filteredMoviesData, getComparator(order, orderBy))
+                            {stableSort(filteredMoviesData(rows, textAtFilter), getComparator(order, orderBy))
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((row, index) => {
                                     return (
@@ -248,7 +234,7 @@ const MoviesTable = ({rows}) => {
                                                         <Button 
                                                             variant='contained' 
                                                             color="error" 
-                                                            onClick={(event) => handleDeleteButton(row.id, event)}>
+                                                            onClick={() => deleteButtonDispatcher(row.id)}>
                                                                 Delete
                                                         </Button>    
                                                     </Grid>
@@ -287,4 +273,4 @@ const MoviesTable = ({rows}) => {
 }
 
 
-export default connect(mapStateToProps) (MoviesTable)
+export default connect(mapStateToProps, matchDispatchToProps) (MoviesTable)

@@ -156,7 +156,7 @@ const GamesTable = ({ rows, deleteButtonDispatcher }) =>  {
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
     
-    const newDataAfterFiltering = (currentData, whatToFilter) => currentData.filter(game => keys.some(key => game[key].toString().toLowerCase().includes(whatToFilter.toLocaleLowerCase())))
+    const filteredGamesData = (currentData, whatToFilter) => currentData.filter(game => keys.some(key => game[key].toString().toLowerCase().includes(whatToFilter.toLocaleLowerCase())))
     
     const handleEditButton = (currentGame) => {
         let { id, title, release, developer, publisher, mode, genre, platform, image, description, storyline } = currentGame;
@@ -177,8 +177,6 @@ const GamesTable = ({ rows, deleteButtonDispatcher }) =>  {
     return (
         <Box>
             <PageTitle titleText="Games Table" />
-            <h5>{JSON.stringify(rows.map(game => game.title))}</h5>
-            <h5>Filtered Data : {JSON.stringify(newDataAfterFiltering(rows, textAtFilter).map(game => game.title))}</h5>
             <Paper>
                 <TableContainer>
                     <Box margin={5}>
@@ -197,7 +195,7 @@ const GamesTable = ({ rows, deleteButtonDispatcher }) =>  {
                     >
                         <EnhancedTableHead order={order} orderBy={orderBy} onRequestSort={onRequestSort} />
                         <TableBody>
-                            {stableSort(newDataAfterFiltering(rows, textAtFilter), getComparator(order, orderBy))
+                            {stableSort(filteredGamesData(rows, textAtFilter), getComparator(order, orderBy))
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((row, index) => {
                                     return (
