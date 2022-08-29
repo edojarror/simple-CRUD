@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { deleteGame } from '../actions/actionCreator';
 import { TableCell, TableHead, TableRow, TableSortLabel, Box, Paper, TableContainer, Table, TableBody, TablePagination, Button, TextField, Grid } from '@mui/material';
 import PageTitle from '../components/PageTitle';
 
@@ -54,6 +56,7 @@ const headCells = [
 ]
 
 const mapStateToProps = state => ({rows : state.gamesData})
+const matchDispatchToProps = dispatch => bindActionCreators({deleteButtonDispatcher: deleteGame}, dispatch)
 
 function stableSort(array, comparator) {
     const stabilizedThis = array.map((el, index) => [el, index]);
@@ -127,13 +130,11 @@ function EnhancedTableHead (props) {
     )
 }
 
-const GamesTable = ({rows}) =>  {
+const GamesTable = ({ rows, deleteButtonDispatcher }) =>  {
     const [order, setOrder] = useState('asc');
     const [orderBy, setOrderBy] = useState('random');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
-    const [gamesListData, setGamesListData] = useState(rows);
-    const [filteredGamesData, setfilteredGamesData] = useState(gamesListData);
     const [textAtFilter, setTextAtFilter] = useState("")
 
     const onRequestSort = (event, property) => {
@@ -155,16 +156,8 @@ const GamesTable = ({rows}) =>  {
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
     
-    const filteredGamesList = gamesListData.filter(row => keys.some(key => row[key].toString().toLowerCase().includes(textAtFilter.toLocaleLowerCase())));
-    const handleDeleteButton = (event, rowId) => {
-        let copyOfDataGames = gamesListData.slice(0, gamesListData.length);
-        let currentDataGameIndex = copyOfDataGames.findIndex(game => game.id === rowId);
-        copyOfDataGames.splice(currentDataGameIndex, 1);
-        setGamesListData(copyOfDataGames);
-        setfilteredGamesData(copyOfDataGames);
-        setRowsPerPage(rowsPerPage);
-        rows.splice(currentDataGameIndex, 1);
-    }
+    const newDataAfterFiltering = (currentData, whatToFilter) => currentData.filter(game => keys.some(key => game[key].toString().toLowerCase().includes(whatToFilter.toLocaleLowerCase())))
+    
     const handleEditButton = (currentGame) => {
         let { id, title, release, developer, publisher, mode, genre, platform, image, description, storyline } = currentGame;
         localStorage.clear();
@@ -180,14 +173,12 @@ const GamesTable = ({rows}) =>  {
         localStorage.setItem("description", description);
         localStorage.setItem("storyline", storyline);
     }
-    
-    useEffect(() => {
-        setfilteredGamesData(filteredGamesList);
-    },[textAtFilter])
 
     return (
         <Box>
             <PageTitle titleText="Games Table" />
+            <h5>{JSON.stringify(rows.map(game => game.title))}</h5>
+            <h5>Filtered Data : {JSON.stringify(newDataAfterFiltering(rows, textAtFilter).map(game => game.title))}</h5>
             <Paper>
                 <TableContainer>
                     <Box margin={5}>
@@ -206,7 +197,7 @@ const GamesTable = ({rows}) =>  {
                     >
                         <EnhancedTableHead order={order} orderBy={orderBy} onRequestSort={onRequestSort} />
                         <TableBody>
-                            {stableSort(filteredGamesData, getComparator(order, orderBy))
+                            {stableSort(newDataAfterFiltering(rows, textAtFilter), getComparator(order, orderBy))
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((row, index) => {
                                     return (
@@ -238,7 +229,7 @@ const GamesTable = ({rows}) =>  {
                                                     <Button 
                                                         variant='contained' 
                                                         color='error'
-                                                        onClick={(event) => handleDeleteButton(event, row.id)}>
+                                                        onClick={() => deleteButtonDispatcher(row.id)}>
                                                             Delete
                                                     </Button>
                                                 </Grid>
@@ -275,4 +266,4 @@ const GamesTable = ({rows}) =>  {
     )
 }
 
-export default connect(mapStateToProps) (GamesTable)
+export default connect(mapStateToProps, matchDispatchToProps) (GamesTable)

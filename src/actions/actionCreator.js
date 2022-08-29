@@ -6,3 +6,5 @@ export const editMovie = (targetedMovieId, editedMovieData) => ({type: "EDIT_MOV
 
 export const editGame = (targetedGameId, editedGameData) =>  ({type: "EDIT_GAME", targetedId: targetedGameId, editedGameData})
 
+export const deleteGame = targetedId => ({type: "DELETE_GAME", targetedId})
+

@@ -192,6 +192,8 @@ const gamesDataReducer = (state = games, action) => {
                     } 
                 : game
             )
+        case "DELETE_GAME" :
+            return state.filter(game => game.id !== action.targetedId)
         default :
             return state
     }
